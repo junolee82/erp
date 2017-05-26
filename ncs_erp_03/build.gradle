@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+//인코딩 지정
+tasks.withType(JavaCompile) {
+options.encoding = 'UTF-8'
+}
+version = '1.0'
+jar {
+	mainClassName = 'kr.or.dgit.bigdata.mybatis_dev.TestMain'
+    manifest {
+        attributes 'Implementation-Title': 'mybatis_dev',
+                   'Implementation-Version': version
+    }
+    dependsOn configurations.runtime // 실행가능한 jar 파일설정
+}
+javadoc {
+options.encoding = 'utf-8'
+// destinationDir = '${buildDir}/dist/javadoc'
+// title = '${baseName} ${version}'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
+	compile group: 'mysql', name: 'mysql-connector-java', version: '5.+'
+	// https://mvnrepository.com/artifact/org.mybatis/mybatis
+	compile group: 'org.mybatis', name: 'mybatis', version: '3.4.1'
+	// https://mvnrepository.com/artifact/log4j/log4j
+	compile group: 'log4j', name: 'log4j', version: '1.2.17'
+	
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}

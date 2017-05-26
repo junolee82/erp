@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.dgit.bigdata.erp.mappers.ErpMapper">
+
+	<resultMap type="Employee" id="employeeResult">
+		<id property="eno" column="eno" />
+		<result property="ename" column="ename" />
+		<result property="salary" column="salary" />
+		<result property="gender" column="gender" />
+		<result property="joindate" column="joindate" />
+		<association property="dno" resultMap="departmentResult" />
+		<association property="title" resultMap="titleResult" />
+	</resultMap>
+
+	<resultMap type="Department" id="departmentResult">
+		<id property="dcode" column="dcode" />
+		<result property="dname" column="dname" />
+		<result property="floor" column="floor" />
+	</resultMap>
+	<resultMap type="Title" id="titleResult">
+		<id property="tcode" column="tcode" />
+		<result property="tname" column="tname" />
+	</resultMap>
+
+
+	<select id="getEmpList" resultMap="employeeResult">
+		SELECT e.*, t.*, d.* FROM
+		employee e, department d, title t
+		where e.dno = d.dcode and e.title =
+		t.tcode
+		order by eno
+	</select>
+
+	<select id="getTitleList" resultType="Title">
+		SELECT distinct tname, tcode FROM
+		title order
+		by tcode
+	</select>
+
+	<select id="getDepartmentList" resultType="Department">
+		SELECT * FROM
+		department order by dcode
+	</select>
+
+	<insert id="insertEmp" parameterType="Employee">
+		insert into
+		employee(eno,ename,salary,dno,gender,joindate,title)
+		values(#{eno},#{ename},#{salary},
+		(select dcode from department where
+		dname = #{dno.dname}) ,#{gender},#{joindate}, (select tcode from title
+		where
+		tname = #{title.tname}) )
+	</insert>
+
+	<update id="updateEmp" parameterType="Employee">
+		update employee set ename =
+		#{ename}, salary = #{salary}, dno = (select
+		dcode from department where
+		dname = #{dno.dname}), gender = #{gender},
+		joindate = #{joindate} ,
+		title = (select tcode from title where
+		tname =
+		#{title.tname}) where eno
+		= #{eno}
+	</update>
+
+	<delete id="deleteEmp" parameterType="int">
+		delete from employee where
+		eno = #{eno}
+	</delete>
+
+	<select id="selectEmp" resultMap="employeeResult" parameterType="int">
+		select e.*, d.*, t.* from employee e, title t, department d
+		where eno =
+		#{eno} and e.dno = d.dcode and e.title = t.tcode
+	</select>
+	<select id="selectDept" resultType="Department" parameterType="int">
+		select * from department where dcode = #{dcode}
+	</select>
+	<select id="selectTitle" resultType="Title" parameterType="int">
+		select * from title where tcode = #{tcode}
+	</select>
+
+	<delete id="deleteDept" parameterType="int">
+		delete from employee where
+		dcode	 = #{dcode}
+	</delete>
+	<delete id="deleteTitle" parameterType="int">
+		delete from title where
+		tcode = #{tcode}
+	</delete>
+
+	<insert id="insertDept" parameterType="Department">
+		insert into department
+		values(#{dcode},#{dname},#{floor})
+	</insert>
+	<insert id="insertTitle" parameterType="Title">
+		insert into title
+		values(#{tcode},#{tname})
+	</insert>
+
+	<update id="updateDept" parameterType="Department">
+		update department set
+		dname=#{dname}, floor= #{floor} where dcode = #{dcode}
+	</update>
+	<update id="updateTitle" parameterType="Title">
+		update title set
+		tname=#{tname} where tcode = #{tcode}
+	</update>
+
+</mapper>
